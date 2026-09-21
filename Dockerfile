@@ -5,7 +5,7 @@ COPY ["src/Axpense.Api/Axpense.Api.csproj", "src/Axpense.Api/"]
 RUN dotnet restore "src/Axpense.Api/Axpense.Api.csproj"
 COPY . .
 WORKDIR "/src/src/Axpense.Api"
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
