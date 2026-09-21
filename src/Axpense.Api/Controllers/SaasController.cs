@@ -28,7 +28,7 @@ public class SaasController(AxpenseDbContext db) : ControllerBase
     public async Task<IActionResult> AddAudit(AuditLog input){input.Id=Guid.NewGuid();input.OrganizationId=Tenant;input.UserId=UserId;input.CreatedAt=DateTime.UtcNow;db.AuditLogs.Add(input);await db.SaveChangesAsync();return Ok(input);}
 
     [HttpGet("export/vehicles.csv")]
-    public async Task<IActionResult> ExportVehicles(){var rows=await db.Vehicles.Where(x=>x.OrganizationId==Tenant).Select(x=>new{x.PlateNumber,x.Make,x.Model,x.ModelYear,x.Vin,x.Status,x.CurrentOdometer}).ToListAsync();var sb=new StringBuilder("PlateNumber,Make,Model,Year,VIN,Status,Odometer\n");foreach(var x in rows)sb.AppendLine($"{Esc(x.PlateNumber)},{Esc(x.Make)},{Esc(x.Model)},{x.Year},{Esc(x.Vin)},{Esc(x.Status)},{x.CurrentOdometer}");return File(Encoding.UTF8.GetBytes(sb.ToString()),"text/csv","axpense-vehicles.csv");}
+    public async Task<IActionResult> ExportVehicles(){var rows=await db.Vehicles.Where(x=>x.OrganizationId==Tenant).Select(x=>new{x.PlateNumber,x.Make,x.Model,x.ModelYear,x.Vin,x.Status,x.CurrentOdometer}).ToListAsync();var sb=new StringBuilder("PlateNumber,Make,Model,ModelYear,VIN,Status,Odometer\n");foreach(var x in rows)sb.AppendLine($"{Esc(x.PlateNumber)},{Esc(x.Make)},{Esc(x.Model)},{x.ModelYear},{Esc(x.Vin)},{Esc(x.Status)},{x.CurrentOdometer}");return File(Encoding.UTF8.GetBytes(sb.ToString()),"text/csv","axpense-vehicles.csv");}
     static string Esc(string? s)=>"\""+(s??"").Replace("\"","\"\"")+"\"";
     async Task Audit(string action,string entity,string? id){db.AuditLogs.Add(new AuditLog{Id=Guid.NewGuid(),OrganizationId=Tenant,UserId=UserId,Action=action,EntityType=entity,EntityId=id});await db.SaveChangesAsync();}
 }
