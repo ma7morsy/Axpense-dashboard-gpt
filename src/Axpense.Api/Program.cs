@@ -7,6 +7,20 @@ using Axpense.Api.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "https://axpense-dashboard-gpt-git-main-ma7morsys-projects.vercel.app",
+                "https://axpense-dashboard-9t4xl99o9-ma7morsys-projects.vercel.app"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddProblemDetails();
 builder.Services.AddResponseCompression();
 builder.Services.AddRateLimiter(options =>
@@ -42,6 +56,7 @@ using (var scope = app.Services.CreateScope())
 }
 if (app.Environment.IsDevelopment()) { app.UseSwagger(); app.UseSwaggerUI(); }
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseMiddleware<TenantAuthorizationMiddleware>();
 app.UseAuthorization();
